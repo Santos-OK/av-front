@@ -16,22 +16,47 @@ import { Search, Clear } from '@mui/icons-material';
 import { useEquipment } from "../context/EquipmentContext";
 import EquipmentDetails from './EquipmentDetails';
 
+// Tarjeta con altura fija
 const EquipmentCard = styled(Card)(({ theme }) => ({
-    height: '100%',
+    height: '300px', // Altura fija para todas las cards
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
+    overflow: 'hidden', // Evita que el contenido se desborde
     '&:hover': {
         transform: 'translateY(-8px)',
         boxShadow: '0 12px 28px rgba(0,0,0,0.15)',
     },
 }));
 
+// Imagen centrada que mantiene proporción dentro del espacio fijo
+const SquareCardMedia = styled(CardMedia)(({ theme }) => ({
+    height: '160px', // Altura fija
+    width: '100%', // Ocupa todo el ancho
+    objectFit: 'cover', // Mantiene proporción
+    flexShrink: 0,
+    backgroundColor: '#f5f5f5', // Fondo para espacios sobrantes
+}));
+
+// Contenido que ocupa el espacio restante
+const SquareCardContent = styled(CardContent)(({ theme }) => ({
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(1.5),
+    overflow: 'hidden',
+    '&:last-child': {
+        paddingBottom: theme.spacing(1.5),
+    },
+}));
+
 const AvailabilityChip = styled(Chip)(({ theme, available }) => ({
-    backgroundColor: available ? '#4CAF50' : '#f44336',
+    backgroundColor: available ? '#238F74' : '#981D00',
     color: 'white',
     fontWeight: 'bold',
+    fontSize: '0.7rem',
+    height: '24px',
 }));
 
 const SearchContainer = styled(Box)(({ theme }) => ({
@@ -87,10 +112,10 @@ export default function Equipment() {
     // Filtrar equipo basado en búsqueda y categorías seleccionadas
     const filteredEquipment = state.equipment.filter(item => {
         const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            item.description.toLowerCase().includes(searchTerm.toLowerCase());
-        
-        const matchesCategory = selectedCategories.length === 0 || 
-                              selectedCategories.includes(item.category);
+            item.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesCategory = selectedCategories.length === 0 ||
+            selectedCategories.includes(item.category);
 
         return matchesSearch && matchesCategory;
     });
@@ -106,8 +131,8 @@ export default function Equipment() {
     };
 
     const handleCategoryToggle = (category) => {
-        setSelectedCategories(prev => 
-            prev.includes(category) 
+        setSelectedCategories(prev =>
+            prev.includes(category)
                 ? prev.filter(c => c !== category)
                 : [...prev, category]
         );
@@ -136,7 +161,6 @@ export default function Equipment() {
 
             {/* Sección de Búsqueda y Filtros */}
             <SearchContainer>
-                
                 {/* Barra de búsqueda */}
                 <TextField
                     placeholder="Buscar equipo por nombre o descripción..."
@@ -151,7 +175,7 @@ export default function Equipment() {
                         ),
                         endAdornment: searchTerm && (
                             <InputAdornment position="end">
-                                <Clear 
+                                <Clear
                                     style={{ cursor: 'pointer' }}
                                     onClick={() => setSearchTerm('')}
                                     color="action"
@@ -163,7 +187,9 @@ export default function Equipment() {
 
                 {/* Filtros por categoría */}
                 <Box sx={{ mt: 2 }}>
-                    
+                    <Typography variant="body2" fontWeight="medium" color="textSecondary" gutterBottom>
+                        Categorías:
+                    </Typography>
                     <CategoryFilter>
                         {categories.map(category => (
                             <CategoryButton
@@ -210,11 +236,10 @@ export default function Equipment() {
                             color="primary"
                             variant="text"
                         >
-                            Limpiar todos los filtros
+                            Limpiar todo
                         </Button>
                     </ActiveFilters>
                 )}
-                
             </SearchContainer>
 
             {/* Resultados de la búsqueda */}
@@ -224,7 +249,7 @@ export default function Equipment() {
                         🔍 No se encontraron equipos
                     </Typography>
                     <Typography variant="body1" color="textSecondary" paragraph>
-                        {hasActiveFilters 
+                        {hasActiveFilters
                             ? "Intenta ajustar tus filtros de búsqueda"
                             : "No hay equipos disponibles en este momento"
                         }
@@ -244,65 +269,74 @@ export default function Equipment() {
                     )}
                 </Box>
             ) : (
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     {filteredEquipment.map((item) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+                        <Grid item xs={6} sm={4} md={3} lg={2} key={item.id}>
                             <EquipmentCard onClick={() => handleCardClick(item)}>
-                                <CardMedia
+                                <SquareCardMedia
                                     component="img"
-                                    height="200"
                                     image={item.image}
                                     alt={item.name}
-                                    sx={{ 
-                                        objectFit: 'cover',
-                                        transition: 'all 0.3s ease',
-                                        '&:hover': {
-                                            filter: 'brightness(1.1)',
-                                        }
-                                    }}
                                 />
-                                <CardContent sx={{ flexGrow: 1, p: 2 }}>
-                                    <Chip 
-                                        label={item.category} 
-                                        size="small" 
-                                        sx={{ 
-                                            backgroundColor: '#D4AF37', 
-                                            color: 'white', 
-                                            mb: 1,
-                                            fontSize: '0.75rem'
-                                        }} 
-                                    />
-                                    <Typography 
-                                        variant="h6" 
-                                        gutterBottom 
-                                        sx={{ 
-                                            fontSize: '1rem',
-                                            fontWeight: 'bold',
-                                            lineHeight: 1.2,
-                                            height: '2.4em',
+                                <SquareCardContent>
+                                    {/* Nombre del equipo */}
+                                    <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                        sx={{
+                                            lineHeight: 1.3,
+                                            height: '2.6em',
                                             overflow: 'hidden',
                                             display: '-webkit-box',
                                             WebkitLineClamp: 2,
-                                            WebkitBoxOrient: 'vertical'
+                                            WebkitBoxOrient: 'vertical',
+                                            fontSize: '0.8rem',
+                                            mb: 1
                                         }}
                                     >
                                         {item.name}
                                     </Typography>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
+                                    
+                                    {/* Chip de categoría */}
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
+                                        <Chip
+                                            label={item.category}
+                                            size="small"
+                                            sx={{
+                                                backgroundColor: '#D4AF37',
+                                                color: 'white',
+                                                fontSize: '0.65rem',
+                                                height: '22px',
+                                                width: 'auto',
+                                                minWidth: 'auto',
+                                                '& .MuiChip-label': {
+                                                    px: 1,
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                    
+                                    {/* Disponibilidad y días */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        mt: 'auto'
+                                    }}>
                                         <AvailabilityChip
                                             available={item.quantity > 0}
-                                            label={item.quantity > 0 ? `${item.quantity} disponible${item.quantity !== 1 ? 's' : ''}` : 'Agotado'}
+                                            label={item.quantity > 0 ? `${item.quantity} disp.` : 'Agotado'}
                                             size="small"
                                         />
-                                        <Typography 
-                                            variant="body2" 
+                                        <Typography
+                                            variant="caption"
                                             color="textSecondary"
-                                            sx={{ fontSize: '0.75rem' }}
+                                            sx={{ fontSize: '0.65rem' }}
                                         >
                                             {item.quantity === 1 ? '1 día' : '7 días'}
                                         </Typography>
                                     </Box>
-                                </CardContent>
+                                </SquareCardContent>
                             </EquipmentCard>
                         </Grid>
                     ))}

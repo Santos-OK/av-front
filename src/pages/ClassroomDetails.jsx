@@ -15,7 +15,7 @@ import {
     styled
 } from '@mui/material';
 import { Close, AddShoppingCart, Add, Remove, CalendarToday } from '@mui/icons-material';
-import { useEquipment } from "../context/EquipmentContext";
+import { useClassroom } from "../context/ClassroomContext";
 
 // Función para convertir Date a string YYYY-MM-DD
 const dateToInputString = (date) => {
@@ -111,48 +111,42 @@ const addDays = (date, days) => {
     return result;
 };
 
-export default function EquipmentDetails({ open, onClose, equipment }) {
-    const { actions } = useEquipment();
+export default function ClassroomDetails({ open, onClose, classroom }) {
+    const { actions } = useClassroom();
     const [addedToCart, setAddedToCart] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [startDate, setStartDate] = useState(null);
 
-    // Reset cuando se abre un equipo diferente
+    // Reset cuando se abre un salón diferente
     useEffect(() => {
         setQuantity(1);
         setAddedToCart(false);
         setStartDate(new Date()); // Fecha actual por defecto
-    }, [equipment]);
+    }, [classroom]);
 
-    if (!equipment) return null;
+    if (!classroom) return null;
 
     const handleAddToCart = () => {
-        console.log('Añadiendo equipo al carrito:', equipment.id, quantity, startDate);
+        console.log('Añadiendo al carrito:', classroom.id, quantity, startDate);
 
         // Calcular fecha de retorno basada en los días de préstamo
         const calculatedReturnDate = returnDate;
 
-        // Asegurarnos de que la función addToCart existe
-        if (actions.addToCart) {
-            actions.addToCart(equipment.id, quantity, startDate, calculatedReturnDate);
-            setAddedToCart(true);
-            setTimeout(() => {
-                setAddedToCart(false);
-                setQuantity(1);
-                onClose();
-            }, 2000);
-        } else {
-            console.error('addToCart no está definido en EquipmentContext');
-            alert('Error: No se pudo añadir al carrito. La función no está disponible.');
-        }
+        actions.addToCart(classroom.id, quantity, startDate, calculatedReturnDate);
+        setAddedToCart(true);
+        setTimeout(() => {
+            setAddedToCart(false);
+            setQuantity(1);
+            onClose();
+        }, 2000);
     };
 
     const getRentalDays = () => {
-        return equipment.quantity === 1 ? 1 : 7;
+        return classroom.quantity === 1 ? 1 : 7;
     };
 
     const handleIncrease = () => {
-        if (quantity < equipment.quantity) {
+        if (quantity < classroom.quantity - 1) {
             setQuantity(quantity + 1);
         }
     };
@@ -163,7 +157,7 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
         }
     };
 
-    const maxQuantityReached = quantity >= equipment.quantity;
+    const maxQuantityReached = quantity >= classroom.quantity;
     const rentalDays = getRentalDays();
 
     // Calcular fecha de retorno
@@ -196,14 +190,14 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                 <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
                     <Box sx={{ p: 3, maxHeight: '70vh', overflow: 'auto' }}>
                         <Grid container spacing={4}>
-                            {/* Columna de imagen */}
+                            {/* Columna de imagen - IZQUIERDA */}
                             <Grid item xs={12} md={6}>
                                 <CardMedia
                                     component="img"
-                                    image={equipment.image}
-                                    alt={equipment.name}
+                                    image={classroom.image}
+                                    alt={classroom.name}
                                     sx={{
-                                        width: '200px',
+                                        width: '200px', // Cambiado de 200px a 100%
                                         height: 300,
                                         objectFit: 'cover',
                                         borderRadius: 2,
@@ -212,11 +206,11 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                 />
                             </Grid>
 
-                            {/* Columna de información */}
+                            {/* Columna de información - DERECHA */}
                             <Grid item xs={12} md={6}>
                                 <Box sx={{ mb: 3 }}>
                                     <Chip
-                                        label={equipment.category}
+                                        label={classroom.category}
                                         sx={{
                                             backgroundColor: '#D4AF37',
                                             color: 'white',
@@ -226,11 +220,24 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                         }}
                                     />
                                     <Typography variant="h4" fontWeight="bold" gutterBottom color="#8B0000">
-                                        {equipment.name}
+                                        {classroom.name}
                                     </Typography>
                                     <Typography variant="body1" color="textSecondary" paragraph sx={{ lineHeight: 1.6 }}>
-                                        {equipment.description}
+                                        {classroom.description}
                                     </Typography>
+                                    
+                                    {/* Información adicional del salón */}
+                                    <Box sx={{ mt: 2 }}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            <strong>Capacidad:</strong> {classroom.capacity} personas
+                                        </Typography>
+                                        <Typography variant="body2" color="textSecondary">
+                                            <strong>Ubicación:</strong> {classroom.location}
+                                        </Typography>
+                                        <Typography variant="body2" color="textSecondary">
+                                            <strong>Equipamiento:</strong> {classroom.equipment.join(', ')}
+                                        </Typography>
+                                    </Box>
                                 </Box>
 
                                 <Divider sx={{ my: 3 }} />
@@ -244,9 +251,9 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                         <Typography
                                             variant="h5"
                                             fontWeight="bold"
-                                            color={equipment.quantity > 0 ? 'success.main' : 'error.main'}
+                                            color={classroom.available ? 'success.main' : 'error.main'}
                                         >
-                                            {equipment.quantity > 0 ? `${equipment.quantity} disponibles` : 'Agotado'}
+                                            {classroom.available ? 'Disponible' : 'No disponible'}
                                         </Typography>
                                         <Chip
                                             label={rentalDays === 1 ? "1 día" : "7 días"}
@@ -256,10 +263,10 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                         />
                                     </Box>
 
-                                    {equipment.quantity === 1 && (
-                                        <Alert severity="warning" sx={{ mb: 2 }}>
+                                    {!classroom.available && (
+                                        <Alert severity="error" sx={{ mb: 2 }}>
                                             <Typography variant="body2" fontWeight="bold">
-                                                ⚠️ Última unidad disponible - Préstamo por 1 día solamente
+                                                ❌ Este salón no está disponible actualmente
                                             </Typography>
                                         </Alert>
                                     )}
@@ -276,7 +283,7 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                         <QuantitySelector>
                                             <QuantityButton
                                                 onClick={handleDecrease}
-                                                disabled={quantity <= 1 || equipment.quantity === 0}
+                                                disabled={quantity <= 1 || !classroom.available}
                                                 size="small"
                                             >
                                                 <Remove />
@@ -287,14 +294,14 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                                     minWidth: '50px',
                                                     textAlign: 'center',
                                                     fontWeight: 'bold',
-                                                    color: equipment.quantity === 0 ? 'text.disabled' : '#8B0000'
+                                                    color: !classroom.available ? 'text.disabled' : '#8B0000'
                                                 }}
                                             >
                                                 {quantity}
                                             </Typography>
                                             <QuantityButton
                                                 onClick={handleIncrease}
-                                                disabled={maxQuantityReached || equipment.quantity === 0}
+                                                disabled={maxQuantityReached || !classroom.available}
                                                 size="small"
                                             >
                                                 <Add />
@@ -302,24 +309,16 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                         </QuantitySelector>
 
                                         <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.9rem' }}>
-                                            de <strong>{equipment.quantity}</strong> disponible{equipment.quantity !== 1 ? 's' : ''}
+                                            Salón completo
                                         </Typography>
                                     </Box>
 
-                                    {equipment.quantity === 0 ? (
+                                    {!classroom.available && (
                                         <Alert severity="error" sx={{ mt: 1 }}>
                                             <Typography variant="body2" fontWeight="bold">
-                                                ❌ No hay unidades disponibles
+                                                ❌ No hay disponibilidad
                                             </Typography>
                                         </Alert>
-                                    ) : (
-                                        maxQuantityReached && (
-                                            <Alert severity="info" sx={{ mt: 1 }}>
-                                                <Typography variant="body2">
-                                                    ✅ Has seleccionado todas las unidades disponibles
-                                                </Typography>
-                                            </Alert>
-                                        )
                                     )}
                                 </Box>
 
@@ -362,7 +361,7 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                                 </Box>
                                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                                                     <Typography variant="body2">
-                                                        Retorno:
+                                                        Fin:
                                                     </Typography>
                                                     <Typography variant="body2" fontWeight="bold" color="success.main">
                                                         {returnDate ? formatDate(returnDate) : '--'}
@@ -373,7 +372,7 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
 
                                         <Alert severity="info" sx={{ mt: 2 }}>
                                             <Typography variant="body2">
-                                                📌 <strong>Nota:</strong> El equipo debe ser recogido en la fecha de inicio seleccionada
+                                                📌 <strong>Nota:</strong> El salón estará reservado para uso exclusivo durante el período seleccionado
                                             </Typography>
                                         </Alert>
                                     </CalendarContainer>
@@ -387,13 +386,13 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                         📋 Resumen de tu Reserva
                                     </Typography>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                                        <Typography variant="body2" fontWeight="medium">Cantidad:</Typography>
+                                        <Typography variant="body2" fontWeight="medium">Salón:</Typography>
                                         <Typography variant="body2" fontWeight="bold" color="#8B0000">
-                                            {quantity} unidad{quantity !== 1 ? 'es' : ''}
+                                            {classroom.name}
                                         </Typography>
                                     </Box>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                                        <Typography variant="body2" fontWeight="medium">Días de préstamo:</Typography>
+                                        <Typography variant="body2" fontWeight="medium">Días de reserva:</Typography>
                                         <Typography variant="body2" fontWeight="bold" color="#8B0000">
                                             {rentalDays} día{rentalDays !== 1 ? 's' : ''}
                                         </Typography>
@@ -407,19 +406,13 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                                 </Typography>
                                             </Box>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                                                <Typography variant="body2" fontWeight="medium">Fecha de retorno:</Typography>
+                                                <Typography variant="body2" fontWeight="medium">Fecha de fin:</Typography>
                                                 <Typography variant="body2" fontWeight="bold" color="success.main">
                                                     {returnDate ? returnDate.toLocaleDateString('es-ES') : '--'}
                                                 </Typography>
                                             </Box>
                                         </>
                                     )}
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                                        <Typography variant="body2" fontWeight="medium">Disponibilidad después:</Typography>
-                                        <Typography variant="body2" fontWeight="bold" color={equipment.quantity - quantity > 0 ? 'success.main' : 'warning.main'}>
-                                            {equipment.quantity - quantity} disponible{equipment.quantity - quantity !== 1 ? 's' : ''}
-                                        </Typography>
-                                    </Box>
                                     <Divider sx={{ my: 1.5 }} />
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Typography variant="body2" fontWeight="medium">Estado:</Typography>
@@ -435,23 +428,23 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                                 {/* Política de préstamo */}
                                 <Box sx={{ mb: 3 }}>
                                     <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                        📝 Política de Préstamo
+                                        📝 Política de Reserva
                                     </Typography>
                                     <Box sx={{ pl: 1 }}>
                                         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                                             • 🎓 Servicio exclusivo para estudiantes universitarios
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                                            • 📅 Equipo con múltiples unidades: <strong>7 días</strong> de préstamo
+                                            • 📅 Reserva por días completos
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                                            • ⏰ Última unidad disponible: <strong>1 día</strong> de préstamo
+                                            • ⏰ Horario de uso: 8:00 AM - 8:00 PM
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                                            • 📆 Los días de préstamo se calculan a partir de la fecha de inicio seleccionada
+                                            • 📆 Los días de reserva se calculan a partir de la fecha de inicio seleccionada
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary">
-                                            • 🆔 Presentar credencial al recoger el equipo
+                                            • 🆔 Presentar credencial al acceder al salón
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -473,13 +466,13 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                             size="large"
                             startIcon={<AddShoppingCart />}
                             onClick={handleAddToCart}
-                            disabled={equipment.quantity === 0 || addedToCart || !startDate}
+                            disabled={!classroom.available || addedToCart || !startDate}
                             sx={{
                                 py: 1.5,
                                 fontSize: '1.1rem'
                             }}
                         >
-                            {addedToCart ? '✓ Añadido al Carrito' : `Añadir ${quantity} al Carrito`}
+                            {addedToCart ? '✓ Añadido al Carrito' : `Reservar Salón`}
                         </DoradoButton>
 
                         {!startDate && (
@@ -493,16 +486,15 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
                         {addedToCart && (
                             <Alert severity="success" sx={{ mt: 2 }}>
                                 <Typography variant="body2" fontWeight="bold">
-                                    {quantity} unidad{quantity !== 1 ? 'es' : ''} añadida{quantity !== 1 ? 's' : ''} al carrito.
-                                    Redirigiendo...
+                                    Salón añadido al carrito. Redirigiendo...
                                 </Typography>
                             </Alert>
                         )}
 
-                        {equipment.quantity === 0 && (
+                        {!classroom.available && (
                             <Alert severity="error" sx={{ mt: 2 }}>
                                 <Typography variant="body2" fontWeight="bold">
-                                    ❌ Este equipo no está disponible actualmente
+                                    ❌ Este salón no está disponible actualmente
                                 </Typography>
                             </Alert>
                         )}
