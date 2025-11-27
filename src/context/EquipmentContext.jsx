@@ -4,28 +4,28 @@ const initialState = {
   equipment: [
     {
       id: 1,
-      name: 'Cámara Canon EOS R5',
+      name: 'Cámara Canon',
       category: 'Cámaras',
       description: 'Cámara mirrorless profesional con resolución 8K',
-      image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      image: 'https://digicentro.com.mx/cdn/shop/products/eos_90d_90f009e9-cee4-4e2f-b9b4-2058123ca3ee_grande@2x.jpg?v=1616171973',
       quantity: 3,
       available: true
     },
     {
       id: 2,
-      name: 'Trípode Manfrotto',
+      name: 'Trípode',
       category: 'Soportes',
       description: 'Trípode profesional para cámaras pesadas',
-      image: 'https://images.unsplash.com/photo-1554048612-7c6c62b32f0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      image: 'https://m.media-amazon.com/images/I/71pcYjtbU4L.jpg',
       quantity: 5,
       available: true
     },
     {
       id: 3,
-      name: 'Micrófono Rode NT1',
+      name: 'Micrófono Rode',
       category: 'Audio',
       description: 'Micrófono de condensador para estudio',
-      image: 'https://images.unsplash.com/photo-1590602847861-f357a9332c7f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      image: 'https://www.fotomecanica.mx/media/catalog/product/cache/243b585d5b053344651ac1ff3b7a4649/1/4/1432227684000_img_497401.jpg',
       quantity: 2,
       available: true
     },
@@ -34,25 +34,25 @@ const initialState = {
       name: 'Luz LED Profesional',
       category: 'Iluminación',
       description: 'Kit de iluminación LED para video',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      image: 'https://i5.walmartimages.com/asr/e7f60100-6a2e-441c-a153-1b7ed33ff0b2.2f1fc167f9163dd43a97ddea65bfdbdf.jpeg?odnHeight=612&odnWidth=612&odnBg=FFFFFF',
       quantity: 4,
       available: true
     },
     {
       id: 5,
-      name: 'Grabadora Zoom H6',
+      name: 'Grabadora Zoom',
       category: 'Audio',
       description: 'Grabadora de audio portátil multipista',
-      image: 'https://images.unsplash.com/photo-1571019614242-c5e5d5e3b5b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      image: 'https://www.fotomecanica.mx/media/catalog/product/cache/42278286db7a024dd142634a8b52937a/z/h/zh6_all_black_zoom_zh6_all_black_2.jpg',
       quantity: 1,
       available: true
     },
     {
       id: 6,
-      name: 'Drone DJI Mavic 3',
+      name: 'Dron',
       category: 'Drones',
       description: 'Drone profesional con cámara 4K',
-      image: 'https://images.unsplash.com/photo-1578305698944-874b04d2f4c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdwF1rdlovUCKt95QPrhOdMCqeHg42u_gYoQ&s',
       quantity: 2,
       available: false
     }
