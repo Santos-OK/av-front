@@ -88,7 +88,7 @@ function Home({ sortOrder, limit }) {
       {/* Sección Hero - 30% de la altura */}
       <HeroSection>
         <HeroTitle variant="h1">
-          UP EQUIPMENT
+          UP RESERVE
         </HeroTitle>
       </HeroSection>
 
@@ -138,7 +138,7 @@ function Home({ sortOrder, limit }) {
                   variant="contained"
                   onClick={() => nav("/equipment")}
                 >
-                  Equipment
+                  Equipo
                 </CardButton>
               </CardContent>
             </ImageCard>
@@ -178,7 +178,7 @@ function Home({ sortOrder, limit }) {
                   variant="contained"
                   onClick={() => nav("/classrooms")}
                 >
-                  Classrooms
+                  Salones
                 </CardButton>
               </CardContent>
             </ImageCard>

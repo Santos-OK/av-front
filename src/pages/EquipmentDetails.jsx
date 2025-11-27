@@ -152,7 +152,7 @@ export default function EquipmentDetails({ open, onClose, equipment }) {
     };
 
     const handleIncrease = () => {
-        if (quantity < equipment.quantity) {
+        if (quantity < equipment.quantity-1) {
             setQuantity(quantity + 1);
         }
     };

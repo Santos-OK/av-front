@@ -212,7 +212,7 @@ export default function Layout() {
             {/* Círculo de foto de perfil */}
             <ProfileAvatar
               alt="Foto de perfil"
-              src="/static/images/avatar/1.jpg"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMDRV2N8pnrP2Jujvm2rzKaiNQbwQ8A__x2Q&s"
               onClick={() => {
                 console.log('Foto de perfil clickeada');
               }}
